@@ -34,7 +34,7 @@ const log = u.debugGenerator(__filename)
 
 /** 
  *@param func: 异步函数 
- */ 
+ */
 const _async = (func) => {
     const p = new Promise((resolve, reject) => {
         try {
@@ -85,7 +85,7 @@ const _await = (() => {
             // Promise.resolve(arg) 返回成功，执行 onResolved
             // onResolved 的执行结果决定then返回innerPromise的状态，从而决定async返回promise的状态
             // onResolved 抛异常，then内部会捕获，返回innerPromise失败，async返回promise失败
-            let innerPromise = onRejected ? Promise.resolve(arg).catch(onRejected).then(onResolved, onRejected)
+            const innerPromise = onRejected ? Promise.resolve(arg).catch(onRejected).then(onResolved, onRejected)
                 : Promise.resolve(arg).then(onResolved, onRejected)
             setTimeout(((n) => {
                 return () => {
