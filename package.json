@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "test": "promises-aplus-tests src/promise-a-test.js",
+    "test": "promises-aplus-tests src/promise/promise-a-plus.js",
     "eslint": "eslint",
     "lint": "npm run eslint src/*.js",
     "lint-fix": "npm run eslint -- src/*.js --fix"
