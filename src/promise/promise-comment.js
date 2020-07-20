@@ -50,7 +50,7 @@ Promise/A+ 测试问题
     2. 注掉非规范中的功能（3个地方）
 */
 
-const u = require("./utils")
+const u = require("../utils")
 const log = u.debugGenerator(__filename)
 
 // 状态（用常量表示）
