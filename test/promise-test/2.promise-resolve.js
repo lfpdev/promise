@@ -45,7 +45,7 @@ console.log("--script end--")
 //===========================resolve(thenable对象)异步执行=========================
 /* 
  * ES6 的resolve可以解析thenable对象。且thenable.then属于微任务
- * thenable.then方法中的参数函数的执行情况会决定
+ * thenable.then方法中的参数函数的执行情况会决定当前promise的状态
 */
 
 /* const Promise = require('../../src/promise/promise-comment')
