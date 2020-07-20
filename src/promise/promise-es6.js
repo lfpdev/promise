@@ -1,3 +1,7 @@
+/**
+ * ES6实现的Promise，在Promise/A+基础上扩展了很多功能，无法通过为Promise/A+写的测试
+ */
+
 const PENDING = 'PENDING'
 const REJECTED = 'REJECTED'
 const RESOLVED = 'RESOLVED'
@@ -14,15 +18,30 @@ const resolvePromise = (promise2, x, resolve, reject) => {
         try {
             const then = x.then
             if (typeof then === 'function') {
-                then.call(x, y => {
-                    if (called) return
-                    called = true
-                    resolvePromise(promise2, y, resolve, reject)
-                }, e => {
-                    if (called) return
-                    called = true
-                    reject(e)
+
+                // then.call(x, y => {
+                //     if (called) return
+                //     called = true
+                //     resolvePromise(promise2, y, resolve, reject)
+                // }, e => {
+                //     if (called) return
+                //     called = true
+                //     reject(e)
+                // })
+
+                // 模拟ES6的行为(异步调用thenable的then方法)。无法通过Promise/A+测试
+                process.nextTick(() => {
+                    then.call(x, y => {
+                        if (called) return
+                        called = true
+                        resolvePromise(promise2, y, resolve, reject)
+                    }, e => {
+                        if (called) return
+                        called = true
+                        reject(e)
+                    })
                 })
+
             } else {
                 resolve(x)
             }
@@ -58,7 +77,7 @@ class Promise {
                 return value.then(resolve, reject)
             }
 
-            // resolve解析theable对象是ES6 Promise的功能，无法通过Promise/A+测试
+            // resolve解析thenable对象是ES6 Promise的功能，无法通过Promise/A+测试
             if (((typeof value === 'object' && value !== null) || typeof value === 'function') &&
                 typeof value.then === 'function') {
                 return process.nextTick(() => {
