@@ -95,9 +95,9 @@ setTimeout(() => {
 
 //================async 返回 promise（变形ok）==================
 
-// let p1
+/* let p1
 
-/* async function f() {
+async function f() {
     console.log("1")
     // await 异步获取返回值
     await new Promise((res, rej) => {
@@ -136,6 +136,8 @@ setTimeout(() => {
 // p2 === p1 ? true
 
 /* // 变形
+let p1
+
 console.log("a")
 let p = _async(function f() {
     console.log("1")
@@ -230,12 +232,12 @@ setTimeout(() => {
     console.log("1")
     throw Error("async error")
     // await 异步获取返回值
-    await new Promise((res, rej) => {
-        console.log("2")
-        rej("1 error")
-        console.log("3")
-    })
-    console.log("4")
+    // await new Promise((res, rej) => {
+    //     console.log("2")
+    //     rej("1 error")
+    //     console.log("3")
+    // })
+    // console.log("4")
 }
 
 console.log("a")
@@ -266,13 +268,13 @@ console.log("a")
 let p = _async(function f() {
     console.log("1")
     throw Error("async error")
-    _await(new Promise((res, rej) => {
-        console.log("2")
-        rej("1 error")
-        console.log("3")
-    }))(() => {
-        console.log("4")
-    })
+    // return _await(new Promise((res, rej) => {
+    //     console.log("2")
+    //     rej("1 error")
+    //     console.log("3")
+    // }))(() => {
+    //     console.log("4")
+    // })
 })
 console.log(p)
 console.log("script end")
@@ -298,7 +300,7 @@ setTimeout(() => {
     })
     console.log("4")
     throw Error("async error")
-    console.log("5")
+    // console.log("5")
 }
 
 console.log("a")
@@ -338,7 +340,7 @@ let p = _async(function f() {
     }))(() => {
         console.log("4")
         throw Error("async error")
-        console.log("5")
+        // console.log("5")
     })
 })
 console.log(p)
@@ -398,7 +400,7 @@ let p = _async(function f() {
     // await 异步获取返回值
     return _await(new Promise((res, rej) => {
         console.log("2")
-        throw Error("async error")
+        // throw Error("async error")
         rej("1 error")
         console.log("3")
     }))(() => {
@@ -415,13 +417,14 @@ console.log(p)
 console.log("script end")
 setTimeout(() => {
     console.log(p)
-}, 0);
- */
+}, 0); */
+
 
 //======================await 表达式.catch()（变形ok）====================
 /**
  * await 后面promise自带catch方法，则失败或抛异常会被自己的catch捕获，不影响async函数体中后面代码的执行
  */
+
 /* async function f() {
     console.log("1")
     // await 异步获取返回值
@@ -489,14 +492,14 @@ setTimeout(() => {
 
 //=======================测试await 基本类型值（变形ok）===================
 
-// async function f() {
-//     console.log('111')
-//     const res = await 222
-//     console.log(res)
-// }
-// console.log("aaa")
-// console.log(f())
-// console.log("bbb")
+/* async function f() {
+    console.log('111')
+    const res = await 222
+    console.log(res)
+}
+console.log("aaa")
+console.log(f())
+console.log("bbb") */
 
 // 输出：
 // aaa
@@ -505,32 +508,34 @@ setTimeout(() => {
 // bbb
 // 222
 
-// 变形
-// console.log("aaa")
-// console.log(_async(function f() {
-//     console.log('111')
-//     return _await(222)((res) => {
-//         console.log(res)
-//     })
-// }))
-// console.log("bbb")
+/* // 变形
+console.log("aaa")
+console.log(_async(function f() {
+    console.log('111')
+    return _await(222)((res) => {
+        console.log(res)
+    })
+}))
+console.log("bbb") */
 
 
 //=======================测试await 普通函数调用（变形ok）===================
+
 // function a() {
 //     console.log("AAA")
 //     return "ok"
 // }
 
-// async function f() {
-//     console.log('111')
-//     const res = await a()
-//     console.log(res)
-// }
+/* 
+async function f() {
+    console.log('111')
+    const res = await a()
+    console.log(res)
+}
 
-// console.log("aaa")
-// console.log(f())
-// console.log("bbb")
+console.log("aaa")
+console.log(f())
+console.log("bbb") */
 
 // 输出：
 // aaa
@@ -540,12 +545,12 @@ setTimeout(() => {
 // bbb
 // ok
 
-// 变形
-// console.log("aaa")
-// console.log(_async(function f() {
-//     console.log('111')
-//     return _await(a())((res) => {
-//         console.log(res)
-//     })
-// }))
-// console.log("bbb")
+/* // 变形
+console.log("aaa")
+console.log(_async(function f() {
+    console.log('111')
+    return _await(a())((res) => {
+        console.log(res)
+    })
+}))
+console.log("bbb") */
