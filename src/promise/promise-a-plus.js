@@ -62,7 +62,7 @@ class Promise {
                 return value.then(resolve, reject)
             }
 
-            // resolve解析theable对象是ES6的功能，无法通过Promise/A+测试
+            // resolve解析thenable对象是ES6的功能，无法通过Promise/A+测试
             // if (((typeof value === 'object' && value !== null) || typeof value === 'function') &&
             //     typeof value.then === 'function') {
             //     return process.nextTick(() => {
