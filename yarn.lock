@@ -592,10 +592,10 @@ graceful-fs@^4.1.2:
   resolved "https://registry.yarnpkg.com/graceful-fs/-/graceful-fs-4.2.4.tgz#2256bde14d3632958c465ebc96dc467ca07a29fb"
   integrity sha512-WjKPNJF79dtJAVniUlGGWHYGz2jWxT6VhN/4m1NdkbZ2nOsEF+cI1Edgql5zCRhs/VsQYRvrXctxktVXZUkixw==
 
-growl@1.9.2:
-  version "1.9.2"
-  resolved "https://registry.yarnpkg.com/growl/-/growl-1.9.2.tgz#0ea7743715db8d8de2c5ede1775e1b45ac85c02f"
-  integrity sha1-Dqd0NxXbjY3ixe3hd14bRayFwC8=
+growl@1.10.0:
+  version "1.10.0"
+  resolved "https://registry.yarnpkg.com/growl/-/growl-1.10.0.tgz#d6f18c34827383bd89fbd3f03131927c3b7159af"
+  integrity sha512-ElsQbgadAZdhC8L+hx4RJu6fDe5uPCaRjdw8CvD39VYemGQT9CSiLdRAEYFWVIlCbPNlw+G4AbqBhQJF2qyHdg==
 
 has-flag@^3.0.0:
   version "3.0.0"
