@@ -1,0 +1,53 @@
+{
+  "env": {
+    "browser": true,
+    "node": true
+  },
+  "extends": "airbnb-base",
+  // JavaScript 语言选项
+  "parserOptions": {
+    // ECMAScript 版本
+    "ecmaVersion": 11
+  },
+  /**
+       *  "off" 或 0 - 关闭规则
+       *  "warn" 或 1 - 开启规则，使用警告级别的错误：warn (不会导致程序退出),
+       *  "error" 或 2 - 开启规则，使用错误级别的错误：error (当被触发的时候，程序会退出)
+       */
+  "rules": {
+    // 数组和对象键值对最后一个逗号
+    "comma-dangle": 0,
+    // 禁止 if 语句中有 return 之后有 else
+    "no-else-return": 0,
+    // 不允许对 function 的参数进行重新赋值
+    "no-param-reassign": 0,
+    // 禁止标识符中有悬空下划线_bar
+    "no-underscore-dangle": 0,
+    // 要求 return 语句要么总是指定返回的值，要么不指定
+    "consistent-return": 0,
+    // 不允许在变量定义之前使用它们
+    "no-use-before-define": 0,
+    // 要求 require() 出现在顶层模块作用域中
+    "global-require": 1,
+    // 要求操作符周围有空格
+    "space-infix-ops": 2,
+    // 强制一行的最大长度
+    "max-len": [
+      1,
+      200
+    ],
+    // 禁止出现未使用过的变量
+    "no-unused-vars": [
+      1,
+      {
+        "vars": "all",
+        "args": "none"
+      }
+    ],
+    "no-console": 1,
+    "semi": [
+      2,
+      "never"
+    ]
+  }
+}
