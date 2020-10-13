@@ -1,5 +1,6 @@
 // eslint-disable-next-line no-unused-vars
 const { _async, _await } = require("../../src/async-await/async-await")
+// const { _async, _await } = require("../../src/async-await/async-await-comment")
 
 //=============async 没有return返回值（变形ok）==============
 /* async function f(){
@@ -199,7 +200,7 @@ setTimeout(() => {
 // script end
 // Promise { <rejected> '1 error' }
 
-/* // 变形
+// 变形
 console.log("a")
 let p = _async(function f() {
     console.log("1")
@@ -212,7 +213,7 @@ let p = _async(function f() {
         console.log("4")
         _await(new Promise((res, rej) => {
             rej("2 error")
-        }))() 
+        }))()
     })
 })
 console.log(p)
@@ -220,7 +221,7 @@ console.log("script end")
 setTimeout(() => {
     console.log(p)
 }, 0);
- */
+
 
 //==============async函数体中await之前抛异常 （变形ok）==================
 
@@ -480,7 +481,7 @@ let p = _async(function f() {
         // catch 回调作为 onRejected 传入
     }, (err) => {
         console.log('i catch you', err)
-        return 123  
+        return 123
     })
 })
 console.log(p)
@@ -526,7 +527,7 @@ console.log("bbb") */
 //     return "ok"
 // }
 
-/* 
+/*
 async function f() {
     console.log('111')
     const res = await a()
