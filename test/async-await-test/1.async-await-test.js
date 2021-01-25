@@ -555,3 +555,59 @@ console.log(_async(function f() {
     })
 }))
 console.log("bbb") */
+
+
+//=======================测试内部不加await,外部加await===================
+async function inner() {
+    return new Promise(res => {
+        setTimeout(() => {
+            res('inner success');
+            console.log('inner success');
+        }, 1000)
+    })
+}
+
+async function outer() {
+    console.log('start');
+    /**
+     * 如果函数逻辑对内部promise的返回结果不感兴趣，可以不用加await，但如果未将其作为promise返回，则外部即使加await也无法等待内部的promise结束
+     * 因此如果
+     *  1.当前函数对promise结果不感兴趣
+     *  2.也不需要有意义的返回值
+     *  3.但是【外部逻辑需要当前函数所有操作都结束】
+     * 那么即使不感兴趣，也需要加await
+     */
+    const res = inner();
+    console.log('outer res = ', res);
+    console.log('end');
+    /**
+     * 如果没有显式指定返回值，则默认返回undefined，此时所在的promise立即onFullFilled，值为undefined
+     * 如果显式返回promise，则此时所在的promise，返回pending状态
+     */
+    // return res; 
+}
+
+(async () => {
+    console.log('aaa');
+    const res = outer();
+    /**
+     * await outer()
+     * 1. outer没有await自己内部的 inner promise，也没有将其作为值返回，则外面await也无法等待outer内部的inner promise结束
+     * 
+     * outer()
+     * 1. outer未显式返回，默认返回undefined，则res=Promise { undefined }
+     *    此时虽然promise已经 fullfilled，但是无法直接获取其值
+     * 2. outer显式返回promise，则res=Promise { <pending> }
+     *    promise尚未 fullfilled
+     */
+    console.log('res = ', res);
+    console.log('bbb');
+})()
+
+// aaa
+// start
+// outer res =  Promise { <pending> }
+// end
+// res =  undefined
+// bbb
+// inner success // outer内部没有await自己的promise，外面也无法等待其结束
