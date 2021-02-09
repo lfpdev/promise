@@ -236,6 +236,22 @@ class Promise {
       }
     })
   }
+
+  static try(func) {
+    return new Promise((resolve, reject) => {
+      resolve(func());
+    });
+  }
+
+  // TODO
+  static any(){
+
+  }
+
+  // TODO
+  static allSettled(){
+
+  }
 }
 
 Promise.deferred = () => {
