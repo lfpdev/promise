@@ -243,8 +243,30 @@ class Promise {
     });
   }
 
-  // TODO
-  static any(){
+
+  static any(promises) {
+    return new Promise((resolve, reject) => {
+      if (promises === undefined || promises === null || !promises[Symbol.iterator]) {
+        const preReason = promises === undefined ? `${promises}` : `${typeof promises} ${promises}`
+        return reject(new TypeError(`${preReason} is not iterable (cannot read property Symbol(Symbol.iterator))`))
+      }
+
+      if (promises.length === 0) return Promise.reject();
+
+      const rejArr = [];
+      let index = 0;
+      const processValue = (i, value) => {
+        rejArr[i] = value
+        index += 1
+        if (index === promises.length) {
+          return reject(rejArr)
+        }
+      }
+      promises.forEach((promise, index) => {
+        Promise.resolve(promise).then(value => resolve(value), error => processValue(index, error));
+      });
+    });
+  }
 
   }
 
