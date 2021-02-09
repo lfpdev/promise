@@ -268,11 +268,31 @@ class Promise {
     });
   }
 
-  }
+  static allSettled(promises) {
+    return new Promise((resolve, reject) => {
+      if (promises === undefined || promises === null || !promises[Symbol.iterator]) {
+        const preReason = promises === undefined ? `${promises}` : `${typeof promises} ${promises}`
+        return reject(new TypeError(`${preReason} is not iterable (cannot read property Symbol(Symbol.iterator))`))
+      }
 
-  // TODO
-  static allSettled(){
+      if (promises.length === 0) return;
 
+      let index = 0
+      const resultArr = []
+      const processValue = (i, status, value) => {
+        resultArr[i] = {
+          status,
+          [status === 'fulfilled' ? 'value' : 'reason']: value
+        }
+        index += 1
+        if (index === promises.length) {
+          return resolve(resultArr)
+        }
+      }
+      promises.forEach((promise, index) => {
+        Promise.resolve(promise).then(value => processValue(index, 'fulfilled', value), error => processValue(index, 'rejected', error));
+      });
+    });
   }
 }
 
