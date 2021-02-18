@@ -9,7 +9,7 @@ async 异步函数（包含函数声明、函数表达式、Lambda表达式[箭�
   2. 先返回PENDING状态的promise，然后再异步修改状态
     2.1 函数体中有await，在await获取到值之前，async先返回 PENDING 状态的promise，然后再根据await后面表达式返回promise的状态而改变
     2.2 如果await后面表达式返回的promise失败且未捕获异常，则async返回的promise失败，失败原因是表达式返回promise的失败原因
-2. 最外层async无法用 await 获取其返回值，应该用原来的方式：then() 链来处理async返回的 promise 对象
+2. 最外层async无法用 await 获取其返回值，应该用原始方式：then链来处理async返回的 promise 对象
 
 await 表达式（包含promise对象，普通函数调用、基本值类型）
 1. 【等待】表达式的【返回值】

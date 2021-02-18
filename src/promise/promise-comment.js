@@ -79,16 +79,16 @@ const resolvePromise = (promise2, x, resolve, reject) => {
   if ((typeof x === 'object' && x !== null) || typeof x === 'function') {
     // 如果x是对象或函数
     try {
-      // promise(x)都有一个then方法，取x的属性then，看是不是函数来判断x是不是promise
+      // promise(即x)都有一个then方法，取x的属性then，看是不是函数来判断x是不是promise
       // 通过 x.then 取值可能会报错，需要try-catch (参考示例 promise-resolvePromise.js)
       const { then } = x
       if (typeof then === 'function') {
         // 至此，认为x是promise
 
         // 不能写成 x.then，因为这样会再次取值，有可能报错 (参考示例 promise-resolvePromise.js)
-        // 用 call 方法，保证then方法中的THIS是需要获取结果的promise实例(x)。如果不call则是window或global
+        // 用 call 方法，保证then方法中的THIS是需要获取结果的promise实例(即x)。如果不call则是window或global
         // 如果是thenable对象，then 方法体中可能会报错，会被catch捕获到
-        // 根据内层promise(x)的状态和值 决定外层promise2的状态和值
+        // 根据内层promise(即x)的状态和值 决定外层promise2的状态和值
 
         // then.call(x,
         //     y => {
@@ -447,6 +447,7 @@ class Promise {
           })
         })
       }
+
     })
     return promise2
   }
