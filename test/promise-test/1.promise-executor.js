@@ -22,7 +22,7 @@ console.log("--script start--")
 // 同步代码
 let promise = new Promise((resolve, reject) => {
     // 以下都是同步代码
-    // 由用户决定成功还是失败已经成功和失败的原因
+    // 由用户决定成功还是失败以及成功和失败的原因
     console.log("executor 同步执行")
 
     // let result = "收到offer"
