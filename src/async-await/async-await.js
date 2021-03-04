@@ -16,8 +16,8 @@ const _async = (func) => {
 }
 
 const _await = (arg) => (onResolved, onRejected) => {
-  const innerPromise = onRejected ? Promise.resolve(arg).catch(onRejected).then(onResolved, onRejected)
-    : Promise.resolve(arg).then(onResolved, onRejected)
+  const innerPromise = onRejected ? Promise.resolve(arg).catch(onRejected).then(onResolved)
+    : Promise.resolve(arg).then(onResolved)
   return innerPromise
 }
 

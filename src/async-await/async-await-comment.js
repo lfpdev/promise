@@ -85,8 +85,8 @@ const _await = (() => {
       // Promise.resolve(arg) 返回成功，执行 onResolved
       // onResolved 的执行结果决定then返回innerPromise的状态，从而决定async返回promise的状态
       // onResolved 抛异常，then内部会捕获，返回innerPromise失败，async返回promise失败
-      const innerPromise = onRejected ? Promise.resolve(arg).catch(onRejected).then(onResolved, onRejected)
-        : Promise.resolve(arg).then(onResolved, onRejected)
+      const innerPromise = onRejected ? Promise.resolve(arg).catch(onRejected).then(onResolved)
+        : Promise.resolve(arg).then(onResolved)
       setTimeout((() => {
         log.info(`异步 then-${n} 的 p =`, innerPromise)
       }), 0)
