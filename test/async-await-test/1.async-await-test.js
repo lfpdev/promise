@@ -201,7 +201,7 @@ setTimeout(() => {
 // Promise { <rejected> '1 error' }
 
 // 变形
-console.log("a")
+/* console.log("a")
 let p = _async(function f() {
     console.log("1")
     // await 异步获取返回值
@@ -220,7 +220,7 @@ console.log(p)
 console.log("script end")
 setTimeout(() => {
     console.log(p)
-}, 0);
+}, 0); */
 
 
 //==============async函数体中await之前抛异常 （变形ok）==================
@@ -426,31 +426,31 @@ setTimeout(() => {
  * await 后面promise自带catch方法，则失败或抛异常会被自己的catch捕获，不影响async函数体中后面代码的执行
  */
 
-/* async function f() {
-    console.log("1")
-    // await 异步获取返回值
-    const r = await new Promise((res, rej) => {
-        console.log("2")
-        rej("1 error")
-        console.log("3")
-    }).catch(err => {
-        console.log('i catch you', err)
-        return 123  // catch 捕获异常，await不抛出，await表达式的值由catch的返回值决定
-    })
-    await new Promise((res, rej) => {
-        console.log("4",r)
-        rej("2 error")
-    })
-    console.log("res = ", r)
-}
+// async function f() {
+//     console.log("1")
+//     // await 异步获取返回值
+//     const r = await new Promise((res, rej) => {
+//         console.log("2")
+//         rej("1 error")
+//         console.log("3")
+//     }).catch(err => {
+//         console.log('i catch you', err)
+//         return 123  // catch 捕获异常，await不抛出，await表达式的值由catch的返回值决定
+//     })
+//     await new Promise((res, rej) => {
+//         console.log("4",r)
+//         rej("2 error")
+//     })
+//     console.log("res = ", r)
+// }
 
-console.log("a")
-let p = f()
-console.log(p)
-console.log("b")
-setTimeout(() => {
-    console.log(p)
-}, 0); */
+// console.log("a")
+// let p = f()
+// console.log(p)
+// console.log("b")
+// setTimeout(() => {
+//     console.log(p)
+// }, 0);
 
 // 输出
 // a
@@ -587,22 +587,23 @@ async function outer() {
     // return res; 
 }
 
-(async () => {
-    console.log('aaa');
-    const res = outer();
-    /**
-     * await outer()
-     * 1. outer没有await自己内部的 inner promise，也没有将其作为值返回，则外面await也无法等待outer内部的inner promise结束
-     * 
-     * outer()
-     * 1. outer未显式返回，默认返回undefined，则res=Promise { undefined }
-     *    此时虽然promise已经 fullfilled，但是无法直接获取其值
-     * 2. outer显式返回promise，则res=Promise { <pending> }
-     *    promise尚未 fullfilled
-     */
-    console.log('res = ', res);
-    console.log('bbb');
-})()
+// (async () => {
+//     console.log('aaa');
+//     const res = outer();
+//     /**
+//      * await outer()
+//      * 1. outer没有await自己内部的 inner promise，也没有将其作为值返回，则外面await也无法等待outer内部的inner promise结束
+//      * 
+//      * outer()
+//      * 1. outer未显式返回，默认返回undefined，则res=Promise { undefined }
+//      *    此时虽然promise已经 fullfilled，但是无法直接获取其值
+//      * 2. outer显式返回promise，则res=Promise { <pending> }
+//      *    promise尚未 fullfilled
+//      */
+//     console.log('res = ', res);
+//     console.log('bbb');
+// })();
+
 
 // aaa
 // start
@@ -611,3 +612,55 @@ async function outer() {
 // res =  undefined
 // bbb
 // inner success // outer内部没有await自己的promise，外面也无法等待其结束
+
+
+//========================await try-catch=========================
+
+async function f() {
+    console.log("1")
+    // await 异步获取返回值
+    let r;
+    try {
+        r = await new Promise((res, rej) => {
+            console.log("2")
+            rej("1 error")
+            console.log("3")
+        })
+        console.log("4", r)
+    } catch (err) {
+        console.log('i catch you', err)
+        return 123  // catch 捕获异常，await不抛出，await表达式的值由catch的返回值决定
+    }
+    console.log("res = ", r)
+}
+
+// console.log("a")
+// let p = f()
+// console.log(p)
+// console.log("b")
+// setTimeout(() => {
+//     console.log(p)
+// }, 0);
+
+console.log("a")
+let p = _async(function f() {
+    console.log("1")
+    let r;
+    return _await(new Promise((res, rej) => {
+        console.log("2")
+        rej("1 error")
+        console.log("3")
+    }))(r => {
+        console.log("4", r)
+        console.log("res = ", r)
+    }).catch((err) => {
+        console.log('i catch you', err)
+        return 123
+        console.log("res = ", r)
+    })
+})
+console.log(p)
+console.log("b")
+setTimeout(() => {
+    console.log(p)
+}, 0);
