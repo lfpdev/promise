@@ -53,6 +53,14 @@ promise reject 的处理
     DeprecationWarning: Unhandled promise rejections are deprecated. 
     In the future, promise rejections that are not handled will terminate the Node.js process with a non-zero exit code
 
+promise——有限状态机的理解
+    1. 有限状态机（Finite State Machine - FSM）简称状态机，一种数学模型，表示有限个状态及在有限状态之间的转移和动作等行为
+       关键要素：状态集、初始状态、状态转移函数、[最终状态]
+    2. Promise状态机分析
+       状态集：Fulfilled、Rejected、Pending
+       初始状态：Pending
+       状态转移函数：executor 函数中传入的 resolve、reject 函数
+
 Promise/A+ 测试问题
     1. 注掉规范方法中的日志
     2. 注掉非规范中的功能（3个地方）
