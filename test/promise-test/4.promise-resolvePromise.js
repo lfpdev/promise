@@ -11,8 +11,8 @@
 
 //========================模拟x.then取值报错及二次取值报错===================
 
-/* // thenable 对象
-let thenableObj = {
+// thenable 对象
+/* let thenableObj = {
     index: 1,
     then: function f(resolve, reject) {
         // resolve('成功啦')
@@ -34,10 +34,14 @@ Object.defineProperty(thenableObj, 'then', {
     }
 })
 
-let res = thenableObj.then
-console.log(typeof res)
-let res2 = thenableObj.then
-console.log(typeof res2)
+// let { then } = thenableObj; // 同 thenableObj.then
+// console.log('typeof then = ', typeof then);
+
+// let res = thenableObj.then
+// console.log(typeof res)
+
+// let res2 = thenableObj.then
+// console.log(typeof res2)
 // 第1次获取then
 // function
 // 第2次获取then
