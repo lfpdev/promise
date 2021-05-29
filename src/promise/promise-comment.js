@@ -123,7 +123,7 @@ const resolvePromise = (promise2, x, resolve, reject) => {
         // 1. process.nextTick 事件将在当前阶段的尾部执行（下次事件循环之前）
         // 2. process.nextTick 将事件维护在 nextTickQueue 中
         //    对于promise来说，没加之前，立即调用then将回调放入 nextTickQueue 中；加了之后，先将对then的调用放入 nextTickQueue 中
-        //    执行会后，再将回调放入 nextTickQueue 中。即对于nextTickQueue来说，回调会延迟执行，但最终都在当前阶段执行，
+        //    执行后，再将回调放入 nextTickQueue 中。即对于nextTickQueue来说，回调会延迟执行，但最终都在当前阶段执行，
         //    对事件循环整体来说没有太大的影响
         // 3. 无法通过Promise/A+ 测试！！！
 
@@ -447,7 +447,6 @@ class Promise {
           })
         })
       }
-
     })
     return promise2
   }

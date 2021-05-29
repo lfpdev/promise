@@ -239,10 +239,9 @@ class Promise {
 
   static try(func) {
     return new Promise((resolve, reject) => {
-      resolve(func());
-    });
+      resolve(func())
+    })
   }
-
 
   static any(promises) {
     return new Promise((resolve, reject) => {
@@ -251,10 +250,10 @@ class Promise {
         return reject(new TypeError(`${preReason} is not iterable (cannot read property Symbol(Symbol.iterator))`))
       }
 
-      if (promises.length === 0) return Promise.reject();
+      if (promises.length === 0) return Promise.reject()
 
-      const rejArr = [];
-      let index = 0;
+      const rejArr = []
+      let index = 0
       const processValue = (i, value) => {
         rejArr[i] = value
         index += 1
@@ -262,10 +261,10 @@ class Promise {
           return reject(rejArr)
         }
       }
-      promises.forEach((promise, index) => {
-        Promise.resolve(promise).then(value => resolve(value), error => processValue(index, error));
-      });
-    });
+      promises.forEach((promise, i) => {
+        Promise.resolve(promise).then((value) => resolve(value), (error) => processValue(i, error))
+      })
+    })
   }
 
   static allSettled(promises) {
@@ -275,7 +274,7 @@ class Promise {
         return reject(new TypeError(`${preReason} is not iterable (cannot read property Symbol(Symbol.iterator))`))
       }
 
-      if (promises.length === 0) return;
+      if (promises.length === 0) return
 
       let index = 0
       const resultArr = []
@@ -289,10 +288,10 @@ class Promise {
           return resolve(resultArr)
         }
       }
-      promises.forEach((promise, index) => {
-        Promise.resolve(promise).then(value => processValue(index, 'fulfilled', value), error => processValue(index, 'rejected', error));
-      });
-    });
+      promises.forEach((promise, i) => {
+        Promise.resolve(promise).then((value) => processValue(i, 'fulfilled', value), (error) => processValue(i, 'rejected', error))
+      })
+    })
   }
 }
 
