@@ -10,6 +10,6 @@
 - promise-comment.js 详细的解释和总结
 - promise-es6.js 根据测试结果实现的符合 ES6 行为的 Promise
 ### test/async-await-test
-- 用来测试 async 和 await 的功能以及对比自己实现的 _async 和 _await
+- 测试 async 和 await 的功能以及对比模拟实现的 _async 和 _await
 ### test/promise-test
-- 用来测试 ES6 Promise 的功能，以及自己实现 Promise 过程中每个模块的测试
+- 测试 ES6 Promise 的功能，以及自己实现 Promise 过程中每个模块的测试
