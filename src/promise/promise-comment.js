@@ -50,7 +50,7 @@ promise reject 的处理
     1. 异步函数后面使用 catch() 异步捕获并处理异常
     2. 使用 async/await 和 try-catch 同步捕获并处理异常
 
-    DeprecationWarning: Unhandled promise rejections are deprecated. 
+    DeprecationWarning: Unhandled promise rejections are deprecated.
     In the future, promise rejections that are not handled will terminate the Node.js process with a non-zero exit code
 
 promise——有限状态机的理解
@@ -226,7 +226,7 @@ class Promise {
     //   2.1 调用 resolve 方法的时候没有指明谁调用的，因此这里的THIS需要明确指向当前实例（使用箭头函数,THIS是构造函数中的THIS）
     const resolve = (value) => {
       // resolve中使用模板字符串，无法通过Promise/A+测试
-      log.debug(`call resolve, status is '${this.status}', value is '${value}'`)
+      log.debug(`call resolve, status is '${this.status}', value is '${JSON.stringify(value)}'`)
 
       // 异步resolve('this')，会导致循环引用-自己等待自己
       if (value === this) {
@@ -239,7 +239,12 @@ class Promise {
         // 递归解析promise，直到value非promise
         // 是异步执行（涉及到then）
         // 调用内部then方法，不会抛出异常
-        return value.then(resolve, reject)
+
+        // 没加 process.nextTick 之前，立即调用then将回调放入 nextTickQueue 中；加了之后，先将对then的调用放入 nextTickQueue 中，执行后，再将回调放入 nextTickQueue 中
+        // return value.then(resolve, reject)
+        return process.nextTick(() => {
+          value.then(resolve, reject)
+        })
       }
 
       // resolve解析thenable对象是ES6的功能，无法通过Promise/A+测试

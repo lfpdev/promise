@@ -71,7 +71,9 @@ class Promise {
       }
 
       if (value instanceof Promise) {
-        return value.then(resolve, reject)
+        return process.nextTick(() => {
+          value.then(resolve, reject)
+        })
       }
 
       // resolve解析thenable对象是ES6 Promise的功能，无法通过Promise/A+测试
