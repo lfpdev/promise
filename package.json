@@ -5,19 +5,19 @@
   "main": "index.js",
   "scripts": {
     "test": "promises-aplus-tests src/promise/promise-a-plus.js",
-    "lint": "eslint src test",
+    "lint": "eslint src",
     "lint-fix": "eslint src --fix"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/lfp1024/promise.git"
   },
-  "author": "",
+  "author": "lfpdev",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/lfp1024/promise/issues"
+    "url": "https://github.com/lfpdev/promise/issues"
   },
-  "homepage": "https://github.com/lfp1024/promise#readme",
+  "homepage": "https://github.com/lfpdev/promise#readme",
   "devDependencies": {
     "eslint": "^7.4.0",
     "eslint-config-airbnb-base": "^14.2.0",
