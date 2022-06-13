@@ -559,6 +559,8 @@ class Promise {
   //  2. 只要一个成员promise返回失败，则all返回一个失败的promise，值为第一个失败的成员promise的失败原因
   //  3. 如果成员promise自身定义了catch方法，那么它被rejected时会被自身定义的catch捕获，
   //     并返回一个新的promise（用这个新promise状态代替该成员promise状态）
+  // 异常：
+  //  1. 结合await使用时，只需要await Promise.all 即可捕获到内部promise的异常，内部promise不需要await
   static all(promises) {
     return new Promise((resolve, reject) => {
       if (promises === undefined || promises === null || !promises[Symbol.iterator]) {

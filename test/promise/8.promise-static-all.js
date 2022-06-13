@@ -11,7 +11,7 @@ let p = Promise.all()
 // let p = Promise.all(null) 
 
 setTimeout(() => {
-	console.log("p = ", p)
+  console.log("p = ", p)
 }, 0); */
 
 // 各自的输出：
@@ -40,7 +40,7 @@ setTimeout(() => {
 
 let p = Promise.all("")
 setTimeout(() => {
-	console.log("p = ", p)
+  console.log("p = ", p)
 }, 0); */
 
 
@@ -66,3 +66,21 @@ Promise.all([promise1, promise2, promise3]).then(function(values) {
 });  */
 
 //[3, 42, 'foo']
+
+//=================测试all 异常捕获=======================
+
+// const Promise = require("../../src/promise/promise-comment")
+
+let promise = new Promise(function (resolve, reject) {
+  setTimeout(resolve, 100, 'foo');
+});
+
+(async () => {
+  try {
+    await Promise.all([
+      Promise.all([promise]).then(([value]) => Promise.reject(new Error(`reject value is ${value}`)))
+    ])
+  } catch (error) {
+    console.log('caught you!', error)
+  }
+})()
