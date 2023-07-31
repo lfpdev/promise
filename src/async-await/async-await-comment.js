@@ -33,8 +33,6 @@ const u = require('../utils')
 
 const log = u.debugGenerator(__filename)
 
-
-
 class CustomPromise extends Promise {
   static identifier
 
