@@ -7,8 +7,9 @@
   // JavaScript 语言选项
   "parserOptions": {
     // ECMAScript 版本
-    "ecmaVersion": 11
+    "ecmaVersion": 2021
   },
+  "parser": "babel-eslint",
   /**
        *  "off" 或 0 - 关闭规则
        *  "warn" 或 1 - 开启规则，使用警告级别的错误：warn (不会导致程序退出),

@@ -18,7 +18,7 @@ await 表达式（包含promise对象，普通函数调用、基本值类型）
 2. await相当于调用后面表达式返回promise的then方法，异步（等待）获取其返回值。即 await<==>promise.then
     2.1 不管代码中是否用到await表达式返回值，await都会去获取（调用其then方法），在获取到之前，async会返回一个 PENDING 状态的promise。
     2.2 函数体中await表达式后面的代码相当于promise.then方法的第一个回调(onResolved),可以拿到表达式返回promise的返回值（即await表达式返回值）
-        因此await会阻塞函数体中后面代码的执行（异步执行then的回调），但是表达式是同步执行的【因此await操作符只能出现在async异步函数中】
+        因此await会阻塞函数体中后面代码的执行（作为then的回调异步执行），但是表达式是同步执行的【因此await操作符只能出现在async异步函数中】
         如果await表达式后面没有代码，则相当于then的第一个回调不传，使用默认回调函数（v=>v）
     2.3 调用promise.then方法的第二个回调默认不传，使用默认回调函数（err=>{throw err}）
         因此当表达式报错或返回失败的promise，await会将该异常抛出到函数体中，可以（需要）通过try-catch捕获异常
@@ -33,13 +33,32 @@ const u = require('../utils')
 
 const log = u.debugGenerator(__filename)
 
+
+
+class CustomPromise extends Promise {
+  static identifier
+
+  constructor(executor, identifier) {
+    super(executor)
+    this.identifier = identifier
+  }
+
+  static customResolve(value, identifier) {
+    const customPromise = new this((resolve, reject) => {
+      resolve(value)
+    })
+    customPromise.identifier = identifier
+    return customPromise
+  }
+}
+
 /**
- *@param func: 异步函数
+ *@param asyncFunc: 异步函数
  */
-const _async = (func) => {
+const _async = (asyncFunc) => {
   const p = new Promise((resolve, reject) => {
     try {
-      const value = func()
+      const value = asyncFunc()
       if (((typeof value === 'object' && value !== null) || typeof value === 'function')
         && typeof value.then === 'function') {
         log.debug('===value is a thenable obj===')
@@ -69,29 +88,35 @@ const _async = (func) => {
 }
 
 /**
- * @param arg: await后面的表达式
- * @param onResolved: 函数体中await表达式下面的代码
+ * @param expr: await后面的表达式
+ * @param onResolved: 函数体中await表达式下面行的代码
  * @param onRejected: 函数体中的catch回调函数
  */
-// 注意变形之后需要加 return _await ...
-// 多个await，变形后会嵌套调用_await，这里用计数器n区分
+// 注意变形之后，await expr及之后的代码变为 return _await(expr)()，即原函数返回一个 _await函数调用，继而返回一个 promise实例（innerPromise）
+// 多个await，变形后会嵌套调用_await，这里用闭包中的计数器n区分
 // await promise自带catch或被try-catch包裹，相当于将catch的回调函数作为 onRejected 传入
 const _await = (() => {
-  let n = 0
-  return (arg) => {
+  let n = 0 // 闭包
+  return (expr) => {
+    // 每次调用都形成一个闭包，子函数通过作用域链获得闭包中的值
     n += 1
+    const currentN = n // 保存当前的 n 值
+    let currentInnerPromise // 当前 promise 实例
     return (onResolved, onRejected) => {
-      // Promise.resolve(arg) 返回失败，执行 onRejected （如果没有传递则执行then的默认失败回调，innerPromise失败）
-      // Promise.resolve(arg) 返回成功，执行 onResolved
+      // Promise.resolve(expr) 返回失败，执行 onRejected （如果没有传递则执行then的默认失败回调，innerPromise失败）
+      // Promise.resolve(expr) 返回成功，执行 onResolved（如果没有传递则只需then的默认成功回调，innerPromise成功）
       // onResolved 的执行结果决定then返回innerPromise的状态，从而决定async返回promise的状态
       // onResolved 抛异常，then内部会捕获，返回innerPromise失败，async返回promise失败
-      const innerPromise = onRejected ? Promise.resolve(arg).catch(onRejected).then(onResolved)
-        : Promise.resolve(arg).then(onResolved)
-      setTimeout((() => {
-        log.info(`异步 then-${n} 的 p =`, innerPromise)
-      }), 0)
-      log.info(`同步 then-${n} 的 p =`, innerPromise)
-      return innerPromise
+      currentInnerPromise = onRejected ? Promise.resolve(expr).catch(onRejected).then(onResolved)
+        : Promise.resolve(expr).then(onResolved)
+      // 为了加 identifier
+      // 从结果可知，多个promise实例的结果是相同的，都是最后（内）一个promise实例的值
+      currentInnerPromise = CustomPromise.customResolve(currentInnerPromise, currentN)
+      setTimeout(() => {
+        log.info(`异步 then-${currentN} 的 p-${currentInnerPromise.identifier} =`, currentInnerPromise)
+      }, 0)
+      log.info(`同步 then-${currentN} 的 p-${currentInnerPromise.identifier} =`, currentInnerPromise)
+      return currentInnerPromise
     }
   }
 })()

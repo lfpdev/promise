@@ -1,6 +1,6 @@
 // eslint-disable-next-line no-unused-vars
-const { _async, _await } = require("../../src/async-await/async-await")
-// const { _async, _await } = require("../../src/async-await/async-await-comment")
+// const { _async, _await } = require("../../src/async-await/async-await")
+const { _async, _await } = require("../../src/async-await/async-await-comment")
 
 //=============async 没有return返回值（变形ok）==============
 /* async function f(){
@@ -664,3 +664,82 @@ console.log("b")
 setTimeout(() => {
     console.log(p)
 }, 0); */
+
+//======================多个await 表达式（变形ok）====================
+
+// async function f() {
+//     console.log("1")
+//     // await 异步获取返回值
+//     const r = await new Promise((res, rej) => {
+//         console.log("2")
+//         rej("1 error")
+//         console.log("3")
+//     }).catch(err => {
+//         console.log('i catch you', err)
+//         return 123  // catch 捕获异常，await不抛出，await表达式的值由catch的返回值决定
+//     })
+//     await new Promise((res, rej) => {
+//         console.log("4",r)
+//         res('2 suc')
+//     })
+//     console.log("res = ", r)
+//     return r
+// }
+
+// console.log("a")
+// let p = f()
+// console.log(p)
+// console.log("b")
+// setTimeout(() => {
+//     console.log(p)
+// }, 0);
+
+
+
+// 变形
+console.log("a")
+let p = _async(function f() {
+    console.log("1")
+    return _await(new Promise((res, rej) => {
+        console.log("2")
+        rej("1 error")
+        console.log("3")
+        // 同步函数执行完,回到 _async 函数中
+    }))((r1) => { // 第一个 _await 返回此 then(onResolved1)创建的promise1结果
+        return _await(new Promise((res, rej) => {
+            console.log("4 r1 =", r1)
+            res('r1 suc')
+        }))((r2) => { // 第二个 _await 返回此 then(onResolved2)创建的promise2结果，并作为promise1的值递归解析
+            console.log("r2 =", r2)
+            return 'r2 suc' // 要 return，promise实例才会拿到值
+        })
+        // catch 回调作为 onRejected 传入
+    }, (err) => {
+        console.log('i catch you', err)
+        return 'catch result'
+    })
+})
+console.log(p)
+console.log("b")
+setTimeout(() => {
+    console.log(p)
+}, 0);
+
+// a
+// 1
+// 2
+// 3
+//   DEV:info:async-await-comment.js 同步 then-1 的 p-1 = CustomPromise [Promise] { <pending>, identifier: 1 }
+//   DEV:debug:async-await-comment.js ===value is a thenable obj===
+//   DEV:debug:async-await-comment.js ========async return==========
+//   DEV:info:async-await-comment.js 同步 async  的 p = Promise { <pending> }
+// Promise { <pending> }
+// b
+// i catch you 1 error
+// 4 123
+//   DEV:info:async-await-comment.js 同步 then-2 的 p-2 = CustomPromise [Promise] { <pending>, identifier: 2 }
+// res = 2 suc
+//   DEV:info:async-await-comment.js 异步 then-1 的 p-1 = CustomPromise [Promise] { '2 suc', identifier: 1 }
+//   DEV:info:async-await-comment.js 异步 async  的 p = Promise { '2 suc' } +1ms
+// Promise { '2 suc' }
+//   DEV:info:async-await-comment.js 异步 then-2 的 p-2 = CustomPromise [Promise] { '2 suc', identifier: 2 }
