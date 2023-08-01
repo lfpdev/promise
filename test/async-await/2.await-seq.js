@@ -64,11 +64,11 @@ async function cook() { //=======
 
 (async () => {
     await market();
-    console.log('entry 1')
+    console.log('entrance 1')
 })();
 (async () => {
     await cook();
-    console.log('entry 2')
+    console.log('entrance 2')
 })();
 
 // 队列情况
@@ -78,8 +78,8 @@ async function cook() { //=======
  *  2. 执行 cook 到其中的 await reserveBread，让出执行权，将加入队列--------------------------------------代码 console.log('做饭 调用返回'); eat()
  * 事件循环
  *  1. 执行 console.log('赶集 预定馒头 调用返回')，并将加入队列-------------------------------------------代码 console.log('赶集 调用返回')；sell()
- *  2. 执行 console.log('做饭 调用返回'); eat()，并将加入队列--------------------------------------------代码 console.log('entry 2')
- *  3. 执行 console.log('赶集 调用返回'); sell()，并将加入队列-------------------------------------------代码 console.log('entry 1')
+ *  2. 执行 console.log('做饭 调用返回'); eat()，并将加入队列--------------------------------------------代码 console.log('entrance 2')
+ *  3. 执行 console.log('赶集 调用返回'); sell()，并将加入队列-------------------------------------------代码 console.log('entrance 1')
  */
 
 //  赶集
@@ -96,5 +96,5 @@ async function cook() { //=======
 // 做饭 吃馒头 剩余 0
 // 赶集 调用返回
 // 卖   取馒头 0
-// entry 2
+// entrance 2
 // Error: sell but no bread
