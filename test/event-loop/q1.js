@@ -1,9 +1,11 @@
 // 链接：https://juejin.cn/post/6945319439772434469
 
-const Promise = require('../../src/promise/promise-comment')
+// const Promise = require('../../src/promise/promise-comment')
 
 Promise.resolve().then(() => { // P1-then1 P1-then1-cb
     console.log(0);
+    // 关键是这里，return一个promise实例，then会继续解析，异步调用该promise实例的then方法（EL一次）
+    // 执行promise实例then方法的第一个参数回调（P1-then1创建promise的resolve）也是异步（EL一次）
     return Promise.resolve(4);// P3
 }).then((res) => { // P1-then2 P1-then2-cb
     console.log(res)
@@ -20,6 +22,7 @@ Promise.resolve().then(() => { // P2-then1 P2-then1-cb
 }).then(() => { // P2-then5 P2-then5-cb
     console.log(6);
 })
+// 输出 0123456
 
 /**
  * 第一轮 代码整体执行完之后
@@ -53,7 +56,7 @@ Promise.resolve().then(() => { // P2-then1 P2-then1-cb
     EL中：
         P1-then1 的 resolve
         P2-then3-cb
-  EL 执行 P1-then1 的 resolve
+  EL 执行 P1-then1 的 resolve // P1-then1 返回之后，才会将 P1-then2-cb 放入EL
     EL中：
         P1-then2-cb
   EL 执行 P2-then3-cb => 3
