@@ -297,7 +297,7 @@ promise.then().then().then(result => {
 
 
 //=====================测试then参数函数返回thenable对象==========================
-/*  
+/*
  * then解析 thenable 调用其then 方法也是异步调用的
 */
 // const Promise = require('../../src/promise/promise-comment')
@@ -317,14 +317,14 @@ setTimeout(() => {
 
 let p = Promise.resolve('ok')
 let p1 = p.then(res => {
-    console.log("p2 then")
-    return obj
+    console.log("p then")
+    return obj // 这里返回 thenable，p的then会解析（调用其then方法）
 })
 
 let p2 = Promise.resolve('ok2')
 let p3 = p2.then(res => {
-    console.log("p3 then")
-    return 
+    console.log("p2 then")
+    return
 })
 
 console.log("p1 =", p1)
@@ -338,8 +338,8 @@ console.log("--script end--") */
 // --script start--
 // p1 = Promise { <pending> }
 // --script end--
+// p then
 // p2 then
-// p3 then
 // 异步执行thenable then
 // setTimeout
 // p1 =  Promise { '成功啦' }
@@ -348,8 +348,8 @@ console.log("--script end--") */
 // --script start--
 // p1 = Promise { <pending> }
 // --script end--
-// p2 then
+// p then
 // 异步执行thenable then
-// p3 then
+// p2 then
 // setTimeout
 // p1 =  Promise { '成功啦' }

@@ -9,6 +9,18 @@ Promise 实现规范 Promise/A+ 地址: https://promisesaplus.com/
 1. 本身还是基于回调函数的形式
 2. 无法中断异步处理结果
 
+thenable 对象
+    具有 then 方法的对象
+    then 方法格式如下
+    const thenableObj = {
+      then: function (onResolved, onRejected) {
+          onResolved('成功啦')
+          console.log("调用 thenable then")
+          // onRejected('失败啦')
+          // throw Error("Oops!")
+      }
+    }
+
 promise循环引用问题：
     循环引用只能发生在异步情况下(then 的参数函数中 或 定时器中)。此时构造函数才能执行完毕获取到当前promise，然后再引用，发生循环引用
     返回一个新的promise都会执行构造函数（调用then的时候）
@@ -135,7 +147,7 @@ const resolvePromise = (promise2, x, resolve, reject) => {
         //         reject(e)
         //     })
 
-        // 根据测试结果（4.promise-then.js 最后一个测试用例），需要异步执行thenable的then方法。使用 process.nextTick（个人理解）
+        // 根据测试结果（3.promise-then.js 最后一个测试用例），需要异步执行thenable的then方法。使用 process.nextTick（个人理解）
         // 1. process.nextTick 事件将在当前阶段的尾部执行（下次事件循环之前）
         // 2. process.nextTick 将事件维护在 nextTickQueue 中
         //    对于promise来说，没加之前，立即调用then将回调放入 nextTickQueue 中；加了之后，先将对then的调用放入 nextTickQueue 中
@@ -251,7 +263,7 @@ class Promise {
       if (((typeof value === 'object' && value !== null) || typeof value === 'function')
         && typeof value.then === 'function') {
         // thenable 对象
-        // 调用内部then方法，其回调是异步执行的，而调用thenable对象中then方法，其回调是同步的(调用thenable.then就会执行)
+        // 调用promise内部then方法，其回调是异步执行的，而调用thenable对象中then方法，其回调是同步的(调用thenable.then就会执行)
         // 因此这里需要在调用的时候异步（微任务）
         // 调用内部的then方法，无法做手脚。而thenable对象中可以对then方法做手脚，因此这里要放到try-catch中
         return process.nextTick(() => {
