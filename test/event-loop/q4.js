@@ -1,33 +1,65 @@
-var fs = require('fs');
-var events = require('events');
-var emitter = new events.EventEmitter();
+/**
+ * queueMicrotask vs nextTick
+ */
 
-emitter.on('someEvent', function (arg1, arg2) {
-    console.log('listener');
-});
+console.log('main start')
 
-function someAsyncOperation(callback) {
-    // 花费2毫秒
-    fs.readFile(__dirname + '/' + __filename, callback);
-}
+process.nextTick(() => {
+    console.log('register in main, execute nextTick')
+})
+queueMicrotask(() => {
+    console.log('register in main, execute queueMicrotask')
+})
 
-var timeoutScheduled = Date.now();
-var fileReadTime = 0;
-
-setTimeout(function () {
-    var delay = Date.now() - timeoutScheduled;
-    console.log('setTimeout: ' + (delay) + "ms have passed since I was scheduled");
-    console.log('fileReaderTime', fileReadtime - timeoutScheduled);
-}, 10);
-
-someAsyncOperation(function () {
-    fileReadtime = Date.now();
-    while (Date.now() - fileReadtime < 20) {
-
-    }
-
-    setImmediate(function () {
-        console.log('setImmediate');
+setTimeout(() => {
+    queueMicrotask(() => {
+        console.log('register in timer, execute queueMicrotask 2')
     })
-    emitter.emit('someEvent'); // 同步执行，先于事件循环
-});
+    process.nextTick(() => {
+        console.log('register in timer, execute nextTick 2')
+    })
+}, 0)
+
+queueMicrotask(() => {
+    queueMicrotask(() => {
+        console.log('register in microtask, execute queueMicrotask 2')
+    })
+    process.nextTick(() => {
+        console.log('register in microtask, execute nextTick 2')
+    })
+})
+
+process.nextTick(() => {
+    queueMicrotask(() => {
+        console.log('register in nextTick, execute queueMicrotask 3')
+    })
+    process.nextTick(() => {
+        console.log('register in nextTick, execute nextTick 3')
+    })
+})
+
+console.log('main end')
+
+// commonjs 模块中
+// main start
+// main end
+// register in main, execute nextTick
+// register in nextTick, execute nextTick 3
+// register in main, execute queueMicrotask
+// register in nextTick, execute queueMicrotask 3
+// register in microtask, execute queueMicrotask 2
+// register in microtask, execute nextTick 2
+// register in timer, execute nextTick 2
+// register in timer, execute queueMicrotask 2
+
+// esm 模块, package.json 中添加 "type": "module",
+// main start
+// main end
+// register in main, execute queueMicrotask
+// register in microtask, execute queueMicrotask 2
+// register in main, execute nextTick
+// register in microtask, execute nextTick 2
+// register in nextTick, execute nextTick 3
+// register in nextTick, execute queueMicrotask 3
+// register in timer, execute nextTick 2
+// register in timer, execute queueMicrotask 2

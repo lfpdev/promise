@@ -16,7 +16,7 @@ Promise.resolve().then(() => { // P2-then1 P2-then1-cb
 }).then(() => { // P2-then2 P2-then2-cb
     console.log(2);
 }).then(() => { // P2-then3 P2-then3-cb
-    console.log(3); 
+    console.log(3);
 }).then(() => { // P2-then4 P2-then4-cb
     console.log(5);
 }).then(() => { // P2-then5 P2-then5-cb

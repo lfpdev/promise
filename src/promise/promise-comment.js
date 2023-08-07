@@ -425,7 +425,7 @@ class Promise {
       }
 
       // 如果 executor 里面异步调用resolve或reject，则调用then方法时，当前promise是pending状态
-      // 如果当前状态是 pending，需要用发布订阅模式，则将传入的回调函数保存起来，稍后执行resolve或reject改变状态时再触发执行
+      // 如果当前状态是 pending，需要用发布订阅模式，则将传入的回调函数保存起来，稍后执行resolve或reject改变状态时再触发执行（先注册再执行）
       // 同一个promise可以多次调用 then 方法，因此会有多个回调函数，需要用数组保存
       if (this.status === PENDING) {
         // AOP

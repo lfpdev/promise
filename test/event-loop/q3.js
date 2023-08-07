@@ -1,26 +1,47 @@
-// setTimeout(() => {
-//     console.log('timer1')
-//     Promise.resolve().then(function () {
-//         console.log('promise1')
-//     })
-// }, 0)
-// setTimeout(() => {
-//     console.log('timer2')
-//     Promise.resolve().then(function () {
-//         console.log('promise2')
-//     })
-// }, 0)
-// node 10 与 之后的版本不同，参考 https://github.com/nodejs/node/pull/22842
-// node 10 timer1 timer2 promise1 promise2
-// node >10 timer1 promise1 timer2 promise2
+async function async1() {
+    console.log('async1 start')//2
+    await async2() // await 中同步调用then，但是执行then的onResolved回调是异步的
+    console.log('async1 end')//6
+}
+async function async2() {
+    console.log('async2')//3
+}
 
+console.log('script start')//1
 
-// setTimeout(() => {
-//     setTimeout(() => {
-//       console.log('timeout')
-//     }, 0)
-//     setImmediate(() => {
-//       console.log('immediate')
-//     })
-//   }, 0)
-// 在回调用注册，永远先 immediate 后 timeout
+setTimeout(() => {
+    console.log('setTimeout')//8
+}, 0)
+
+async1(); //1
+
+new Promise(resolve => {
+    console.log('promise1')//4
+    resolve();
+}).then(() => {
+    console.log('promise2')//7
+})
+
+console.log('script end')//5
+
+// node 8 跟 node 12 18 如下
+// script start
+// async1 start
+// async2
+// promise1
+// script end
+// **async1 end**
+// **promise2**
+// setTimeout
+
+// node 10 如下
+// script start
+// async1 start
+// async2
+// promise1
+// script end
+// **promise2**
+// **async1 end**
+// setTimeout
+
+// 最关键那两个async1 end 和 promise2 先后跟版本，环境有关系
