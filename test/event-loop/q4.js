@@ -21,7 +21,7 @@ setTimeout(() => {
 }, 0)
 
 queueMicrotask(() => {
-    queueMicrotask(() => {
+    queueMicrotask(() => { // 先执行 process.nextTick 的回调，注册 queueMicrotask3
         console.log('register in microtask, execute queueMicrotask 2')
     })
     process.nextTick(() => {

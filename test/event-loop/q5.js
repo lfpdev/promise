@@ -21,6 +21,13 @@ Promise.resolve().then(() => {
 
 console.log('End');
 
+// Start
+// End
+// Microtask 1 executed
+// Promise callback 1 executed
+// Microtask 2 executed
+// Promise callback 2 executed
+
 
 
 // ==================

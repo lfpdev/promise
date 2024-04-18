@@ -197,6 +197,7 @@ class Promise {
     })
   }
 
+  // 返回第一个失败的，如果都没有则返回所有成功的
   static all(promises) {
     return new Promise((resolve, reject) => {
       if (promises === undefined || promises === null || !promises[Symbol.iterator]) {
@@ -224,6 +225,7 @@ class Promise {
     })
   }
 
+  // 返回第一个成功或失败的
   static race(promises) {
     return new Promise((resolve, reject) => {
       if (promises === undefined || promises === null || !promises[Symbol.iterator]) {
@@ -245,6 +247,7 @@ class Promise {
     })
   }
 
+  // 与all相反，返回第一个成功的，如果都没有则返回所有失败的
   static any(promises) {
     return new Promise((resolve, reject) => {
       if (promises === undefined || promises === null || !promises[Symbol.iterator]) {
