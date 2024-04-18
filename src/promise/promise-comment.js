@@ -156,7 +156,8 @@ const resolvePromise = (promise2, x, resolve, reject) => {
         // 3. 无法通过Promise/A+ 测试！！！
 
         process.nextTick(() => {
-          then.call(x,
+          then.call(
+            x,
             (y) => {
               // 【这里调用别人实现的promise中的then方法，执行自己传入的回调】
               // 无法控制别人的代码执行几个回调，只能控制自己传入的回调（添加判断）防止走成功后又走失败
@@ -183,7 +184,8 @@ const resolvePromise = (promise2, x, resolve, reject) => {
               // 同理，如果 x(promise) 返回失败，则当前then返回的promise2返回失败，值为x(promise)的失败原因
               // promise(x)失败又返回promise（即e是一个promise），不再递归解析，直接将最后的promise作为失败原因返回
               reject(e)
-            })
+            }
+          )
         })
       } else {
         // x 不是 promise（是个普通对象或普通函数），例如：{then:123}
