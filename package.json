@@ -19,7 +19,7 @@
   },
   "homepage": "https://github.com/lfpdev/promise#readme",
   "devDependencies": {
-    "eslint": "^8.46.0",
+    "eslint": "^9.0.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-plugin-import": "^2.28.0",
     "promises-aplus-tests": "^2.1.2"
