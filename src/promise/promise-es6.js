@@ -225,28 +225,6 @@ class Promise {
     })
   }
 
-  // 返回第一个成功或失败的
-  static race(promises) {
-    return new Promise((resolve, reject) => {
-      if (promises === undefined || promises === null || !promises[Symbol.iterator]) {
-        const preReason = promises === undefined ? `${promises}` : `${typeof promises} ${promises}`
-        return reject(new TypeError(`${preReason} is not iterable (cannot read property Symbol(Symbol.iterator))`))
-      }
-
-      if (promises.length === 0) return
-
-      for (let i = 0; i < promises.length; i += 1) {
-        Promise.resolve(promises[i]).then((value) => resolve(value), (error) => reject(error))
-      }
-    })
-  }
-
-  static try(func) {
-    return new Promise((resolve, reject) => {
-      resolve(func())
-    })
-  }
-
   // 与all相反，返回第一个成功的，如果都没有则返回所有失败的
   static any(promises) {
     return new Promise((resolve, reject) => {
@@ -272,6 +250,23 @@ class Promise {
     })
   }
 
+  // 返回第一个成功或失败的
+  static race(promises) {
+    return new Promise((resolve, reject) => {
+      if (promises === undefined || promises === null || !promises[Symbol.iterator]) {
+        const preReason = promises === undefined ? `${promises}` : `${typeof promises} ${promises}`
+        return reject(new TypeError(`${preReason} is not iterable (cannot read property Symbol(Symbol.iterator))`))
+      }
+
+      if (promises.length === 0) return
+
+      for (let i = 0; i < promises.length; i += 1) {
+        Promise.resolve(promises[i]).then((value) => resolve(value), (error) => reject(error))
+      }
+    })
+  }
+
+  // 返回所有成功或失败的结果
   static allSettled(promises) {
     return new Promise((resolve, reject) => {
       if (promises === undefined || promises === null || !promises[Symbol.iterator]) {
@@ -296,6 +291,12 @@ class Promise {
       promises.forEach((promise, i) => {
         Promise.resolve(promise).then((value) => processValue(i, 'fulfilled', value), (error) => processValue(i, 'rejected', error))
       })
+    })
+  }
+
+  static try(func) {
+    return new Promise((resolve, reject) => {
+      resolve(func())
     })
   }
 }

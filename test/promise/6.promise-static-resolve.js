@@ -1,6 +1,6 @@
 //================测试 不传参数或null=================
 /* 
- * 返回一个立即resolved的promise
+ * 同步执行，返回一个resolved的promise
 */
 
 /* const Promise = require('../../src/promise/promise-comment')

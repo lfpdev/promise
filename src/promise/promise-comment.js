@@ -11,7 +11,7 @@ Promise 实现规范 Promise/A+ 地址: https://promisesaplus.com/
 
 thenable 对象
     具有 then 方法的对象
-    then 方法格式如下
+    then 方法格式如下:
     const thenableObj = {
       then: function (onResolved, onRejected) {
           onResolved('成功啦')
@@ -20,24 +20,25 @@ thenable 对象
           // throw Error("Oops!")
       }
     }
+    通过 Promise.resolve 转换为 Promise 时，用于控制状态，类似 executor 函数，需要【手动调用】
 
 promise循环引用问题：
     循环引用只能发生在异步情况下(then 的参数函数中 或 定时器中)。此时构造函数才能执行完毕获取到当前promise，然后再引用，发生循环引用
     返回一个新的promise都会执行构造函数（调用then的时候）
 
 promise递归解析问题：
-    解析promise即 调用 该promise的 then方法，将外层promise的resolve reject 作为内层promise返回后 触发执行的 then方法的 回调
+    解析promise即 调用 该promise的 then方法，将外层promise的resolve和reject 作为 内层promise返回后_触发执行的_then方法的_回调
       then的参数函数返回promise会递归解析，直到返回非promise或被reject。
         底层原理是将then返回的 promise的 resolve和reject 作为参数函数返回的 promise的 then的 回调，
-        当参数函数返回的 promise返回后 才触发执行
+        当参数函数返回的promise 返回后 才触发执行
       构造函数中提供的resolve方法会递归解析，直到返回非promise或被reject（reject不会解析promise）
-        底层原理是将自己和reject作为参数promise的then的回调，当参数promise返回后，才触发执行
+        底层原理是将自己和reject作为 参数promise的 then的 回调，当参数promise返回后 才触发执行
     因此递归解析的时候
       某内层失败后，外层依次调用其reject方法，也都返回失败
       最内层成功后，外层依次调用其resolve方法，也都返回成功
     注册then回调
-      递推的时候不会将then的回调注册到微任务队列尾部
-      回归的时候，promise状态改变才会注册到微任务队列尾部，在下次循环执行
+      递推的时候，不会将then的回调注册到微任务队列尾部
+      回归的时候，promise状态改变后，才会注册到微任务队列尾部，在下次循环执行
 
 promise 异常问题：
     1. 如果没有传递executor函数，直接抛出异常，外面可以同步捕获
@@ -55,7 +56,8 @@ promise 异常问题：
       6.2 如果在其then参数函数resolve和reject之后抛异常，会被try-catch捕获，但是不改变promise的状态
 
 promise then事件循环问题：
-    调用then就会将then的参数函数注册到微任务队列末尾，在下一轮事件循环才会执行（延迟一轮执行）
+    手动解析Promise，例如 Promise.resolve().then，会同步调用then，将then的参数函数注册到微任务队列末尾，在下一轮事件循环才会执行（延迟一轮执行）
+    自动解析Promise，例如 promise 递归解析的那些情况，需异步调用then，再异步调用then的参数函数（延迟两轮执行）
 
 promise reject 的处理
     最终处理结果要返回一个 resolved promise。否则会报 UnhandledPromiseRejectionWarning，
@@ -71,11 +73,21 @@ promise——有限状态机的理解
     2. Promise状态机分析
        状态集：Fulfilled、Rejected、Pending
        初始状态：Pending
-       状态转移函数：executor 函数中传入的 resolve、reject 函数
+       状态转移函数：executor 函数函数（传入的 resolve、reject）
 
 Promise/A+ 测试问题
     1. 注掉规范方法中的日志
     2. 注掉非规范中的功能（3个地方）
+
+区别调用和执行两个术语
+  - 调用 call
+    指代码中触发函数执行的时刻。例如 foo()
+     1. 同步代码立即执行【同步调用】
+     2. 异步代码不一定立即执行，可能被放入事件循环中【异步调用】
+  - 调度 schedule
+    指异步编程中，安装函数执行的过程
+  - 执行 execution
+    指JS引擎进入函数内部（将代码放入调用栈），按顺序执行其中的代码
 */
 
 const u = require('../utils')
@@ -148,8 +160,7 @@ const resolvePromise = (promise2, x, resolve, reject) => {
         //     })
 
         // 根据测试结果（3.promise-then.js 最后一个测试用例），需要异步执行thenable的then方法。使用 process.nextTick（个人理解）
-        // 1. process.nextTick 事件将在当前阶段的尾部执行（下次事件循环之前）
-        // 2. process.nextTick 将事件维护在 nextTickQueue 中
+        // 1. process.nextTick 将事件维护在 nextTickQueue 中，在当前阶段的尾部执行（下次事件循环之前）
         //    对于promise来说，没加之前，立即调用then将回调放入 nextTickQueue 中；加了之后，先将对then的调用放入 nextTickQueue 中
         //    执行后，再将回调放入 nextTickQueue 中。即对于nextTickQueue来说，回调会延迟执行，但最终都在当前阶段执行，
         //    对事件循环整体来说没有太大的影响
@@ -218,7 +229,7 @@ class Promise {
   // 1. 创建类的实例，需要等构造函数中的代码全部执行完毕，才能拿到值
   //  1.1 如果resolve或reject是异步调用，则构造函数执行完毕返回 PENDING 状态的promise
   // 2. THIS
-  //  2.1 构造函数中的THIS指代当前实例对象
+  //  2.1 构造函数中的THIS指向当前实例对象
   constructor(executor) {
     // executor 执行器
     // 1. 构造函数必须传入一个参数，类型是函数
@@ -254,7 +265,10 @@ class Promise {
         // 是异步执行（涉及到then）
         // 调用内部then方法，不会抛出异常
 
-        // 没加 process.nextTick 之前，立即调用then将回调放入 nextTickQueue 中；加了之后，先将对then的调用放入 nextTickQueue 中，执行后，再将回调放入 nextTickQueue 中
+        // 【异步调用】 then 方法（即放入事件队列中，遵循微任务机制）。确保所有的 Promise 行为都能一致地以异步方式执行，避免潜在的同步执行问题
+        // 因此这里要用 process.nextTick 异步调用：先将then的调用访问EL，再将then的回调放入EL，要走两轮EL
+        //    没加 process.nextTick 之前，立即调用then将回调放入 nextTickQueue 中；
+        //    加了之后，先将对then的调用放入 nextTickQueue 中，执行后，再将回调放入 nextTickQueue 中
         // return value.then(resolve, reject)
         return process.nextTick(() => {
           value.then(resolve, reject)
@@ -301,7 +315,8 @@ class Promise {
       }
     }
 
-    // 1. executor函数，立即同步执行
+    // executor 用于【控制状态】
+    // 1. executor函数，立即同步执行（创建Promise实例时，作为构造函数自动、立即、同步执行）
     //   1.1 同步代码报错，可以捕获到异常
     //   1.2 异步代码报错，无法捕获（当异步代码执行的时候，捕获异常的函数已经出栈了）
     // 2. executor 中默认提供 resolve reject 方法
@@ -315,7 +330,8 @@ class Promise {
     //   2.6 resolve 和 reject 的参数只能是值类型，如果是个表达式（new构造函数 或 普通函数[调用]），
     //         会先将其在executor函数体中执行，得到表达式的返回值再传给 resolve 或 reject 执行
     //         如果在执行过程中报错，可以被executor的try-catch捕获
-    // 3. 自定义
+    //   2.7 不限制同步还是异步调用 resolve 和 reject，只要【最终调用】了就行
+    // 3. 控制权
     //   3.1 成功还是失败（什么情况下调用 resolve/reject）由用户决定
     //   3.2 成功的结果和失败的原因，由用户决定
     try {
@@ -326,17 +342,17 @@ class Promise {
     }
   }
 
-  // then
+  // then 用于【处理状态】
   // 1. Promise 必须具有then方法
   //   1.1 then方法需要用户传入两个参数函数（回调函数），第一个是状态变为成功时触发执行(接收成功的结果)【成功回调】，
   //       第二个是状态变为失败时触发执行（接收失败的原因）【失败回调】。【两个参数函数只能触发执行一个】
   //   1.2 如果某个参数函数没有传递，则会使用默认参数函数
-  //   1.3 then方法同步执行，但是传入的两个参数函数（回调）是异步执行
+  //   1.3 then方法同步执行，但是传入的两个参数函数（回调）是异步执行（即异步调用）
   //         ES6的Promise中then属于微任务，其他Promise库可能是宏任务（bluebird）
   //         无法自己实现一个微任务，只能调用宿主环境提供的API
   //   1.4 then方法在调用参数函数时会传入'THIS'(调用then的promise实例)的值，即参数函数可以拿到当前promise的值
   // 2. then方法 返回一个【新】的promise
-  //   2.1 then 方法的执行过程类似执行构造函数，处理完回调函数（注册到微任务队列或添加到待执行队列）之后，立即返回 PENDING 状态的promise
+  //   2.1 then 方法的执行过程类似执行构造函数，处理完回调函数（注册到微任务队列）之后，立即返回 PENDING 状态的promise
   //       继续执行后续同步代码（因此链式调用会同步执行then方法，完后再执行then方法的回调）
   // 3. then方法 返回promise的状态 及 链式调用 promise返回值的传递规则：
   //   3.1 需要在参数函数中用return明确指定返回值，否则then方法默认返回一个成功的promise，值是undefined，传入下一个then的成功回调中
@@ -364,13 +380,13 @@ class Promise {
 
     // 懒递归，每次调用就new一个新的promise
     const promise2 = new Promise((resolve, reject) => {
-      // then方法同步执行（判断是同步的），回调函数异步执行
+      // executor 同步执行，即这里的 if 判断是同步的
       if (this.status === RESOLVED) {
-        // then中回调函数异步执行，可以用 setTimeout 或 process.nextTick 模拟实现【只能用一种，不能混用】
+        // then的回调函数异步执行，可以用 setTimeout 或 process.nextTick 模拟实现【只能用一种，不能混用】
         // ES6 规范中 then 是微任务，这里无法自己实现一个微任务，只能调用宿主环境提供的API（process.nextTick）
 
-        // then方法同步执行到这里，创建匿名函数的时候，promise2 还没有定义（等构造函数中的代码全部执行完毕，才能拿到promise2）
-        // 构造函数还没有执行完，但是在构造函数中就使用了实例，因此匿名函数的执行一定是异步的，才能在执行时拿到实例
+        // then方法同步执行到这里，创建匿名函数（executor）的时候，promise2 还没有定义（等构造函数中的代码全部执行完毕，才能拿到promise2）
+        // 构造函数还没有执行完，但是在构造函数中就使用了实例，因此executor构造函数的执行一定是异步的（放在 process.nextTick中），才能在执行时拿到实例
 
         // setTimeout(() => {
         //     try {
@@ -498,13 +514,13 @@ class Promise {
   //   当无论如何必须要处理一个逻辑的时候使用，如果返回成功的promise不影响整个then链的结果
   // callback
   //  1. 调用callback不会传递参数（无法拿到前面promise的返回值）
-  //  2. callback最终在then的参数函数中被调用
+  //  2. callback最终在then的参数函数中被调用，成功回调或失败回调
   //  3. callback返回一个promise（如果不是则用Promise.resolve转换为promise），且会等待这个promise返回
   // finally值传递规则
   //  调用then方法返回一个promise，根据callback的执行结果决定自己的状态和值
-  //   1. 如果callback返回的promise成功，则finally返回成功的promise，值为前面promise的成功结果，传递下去（遵循 then 的链式调用原理）
-  //   2. 如果callback返回的promise失败，则finally返回失败的promise，值为callback返回promise的失败原因，取代并传递下去（遵循 then 的链式调用原理）
-  //   3. 如果callback执行报错，则被当前then回调的try-catch捕获，finally返回失败的promise，值为报错原因，取代并传递下去
+  //   1. 如果callback返回的promise成功，则finally返回成功的promise，值为前面promise的结果（value 或 err），传递下去（遵循 then 的链式调用原理）
+  //   2. 如果callback返回的promise失败，则finally返回失败的promise，值为callback返回promise的失败原因，覆盖前面promise的结果，并传递下去（遵循 then 的链式调用原理）
+  //   3. 如果callback执行报错，则被当前then回调的try-catch捕获，finally返回失败的promise，值为报错原因，覆盖前面promise的结果，并传递下去
   finally(callback) {
     log.info(`call finally, promise is ${JSON.stringify(this)}`)
     return this.then((value) => {
@@ -541,8 +557,9 @@ class Promise {
       if (((typeof value === 'object' && value !== null) || typeof value === 'function')
         && typeof value.then === 'function') {
         // thenable 对象
-        // 调用内部then方法，其回调是异步执行的，而调用thenable对象中then方法，其回调是同步的(调用thenable.then就会执行)
-        // 因此这里需要在调用的时候异步（微任务）
+        // 内部then方法用于控制状态，类似 executor 函数，需要【手动调用】
+        //    异步调用内部then方法：异步调用回调，但是回调是同步的(调用thenable.then就会执行)
+        //    因此这里需要在调用的时候异步（微任务）
         // 调用内部的then方法，无法做手脚。而thenable对象中可以对then方法做手脚，因此这里要放到try-catch中
         process.nextTick(() => {
           try {

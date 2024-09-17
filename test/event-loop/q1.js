@@ -2,9 +2,10 @@
 
 // const Promise = require('../../src/promise/promise-comment')
 
+// 这里是【手动解析】 Promise.resolve() 返回 promise 实例的then方法，因此是【同步调用】
 Promise.resolve().then(() => { // P1-then1 P1-then1-cb
     console.log(0);
-    // 关键是这里，return一个promise实例，then会继续解析，异步调用该promise实例的then方法（EL一次）
+    // 关键是这里，return一个promise实例，会【自动解析】：【异步调用】该promise实例的then方法（EL一次）
     // 执行promise实例then方法的第一个参数回调（P1-then1创建promise的resolve）也是异步（EL一次）
     return Promise.resolve(4);// P3
 }).then((res) => { // P1-then2 P1-then2-cb

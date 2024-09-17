@@ -2,23 +2,22 @@
  * finally参数函数没有参数，无法拿到前面promise的值 
 */
 
-// const Promise = require("../../src/promise/promise-comment")
+/* const Promise = require("../../src/promise/promise-comment")
 
-/* Promise.reject('error').finally((v) => {
-    console.log("finally", v)   // finally undefined
-    // return new Promise((res, rej) => {
-    //     setTimeout(() => {
-    //         // res("ok")
-    //         rej("fail")
-    //     }, 1000);
-    // })
-    return 123
+Promise.reject('Oops').finally((v) => {
+    console.log("exec finally callback", v)   // finally undefined
+    return new Promise((res, rej) => {
+        setTimeout(() => {
+            res("ok")
+            // rej("finally rejected")
+        }, 1000);
+    })
+    // return 123
 }).then(result => {
     console.log("result = ", result)
 }).catch(err => {
     console.log("err = ", err)
-})
- */
+}) */
 
 
 /* 
